@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rwanda Hospitality Bridge</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --blue-deep:#0D2B45;--blue-mid:#1A4A72;--blue-rich:#1E5F94;--blue-sky:#3A8FC0;
+  --blue-pale:#D6EAF8;--white:#FFFFFF;--off-white:#F7F9FC;
+  --brown-dark:#3E1F0A;--brown-mid:#7A4420;--brown-warm:#A0622A;
+  --brown-gold:#C8960C;--brown-light:#D4A574;
+  --text-dark:#0D1B2A;--text-mid:#2C4A6E;--text-muted:#5A7A99;
+  --shadow-sm:0 4px 16px rgba(13,43,69,0.10);
+  --shadow-md:0 8px 32px rgba(13,43,69,0.16);
+  --shadow-lg:0 20px 60px rgba(13,43,69,0.22);
+  --r:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text-dark);overflow-x:hidden;line-height:1.6;}
+img{max-width:100%;display:block;}a{text-decoration:none;}button{cursor:pointer;font-family:inherit;border:none;}
+
+/* NAVBAR */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:3000;height:70px;background:rgba(10,22,38,0.97);backdrop-filter:blur(16px);border-bottom:2px solid var(--blue-sky);display:flex;align-items:center;justify-content:space-between;padding:0 5%;transition:box-shadow 0.3s;}
+#navbar.scrolled{box-shadow:var(--shadow-lg);}
+.nav-logo-wrap{display:flex;align-items:center;gap:12px;}
+.nav-logo-svg{width:52px;height:52px;flex-shrink:0;}
+.nav-brand-text{display:flex;flex-direction:column;line-height:1.1;}
+.nav-brand-main{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--white);}
+.nav-brand-sub{font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--blue-sky);font-weight:500;}
+.nav-links{display:flex;gap:2px;list-style:none;align-items:center;}
+.nav-links li a{display:block;padding:8px 16px;color:#B0C8DC;font-size:0.78rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border-radius:4px;transition:color 0.25s,background 0.25s;position:relative;}
+.nav-links li a::after{content:'';position:absolute;bottom:4px;left:16px;right:16px;height:2px;background:var(--blue-sky);transform:scaleX(0);transform-origin:center;transition:transform 0.3s;border-radius:2px;}
+.nav-links li a:hover,.nav-links li a.active-link{color:var(--white);}
+.nav-links li a:hover::after,.nav-links li a.active-link::after{transform:scaleX(1);}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:6px;}
+.hamburger span{display:block;width:24px;height:2px;background:var(--white);border-radius:2px;transition:all 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mob-menu{display:none;flex-direction:column;position:fixed;top:70px;left:0;right:0;z-index:2999;background:rgba(10,22,38,0.98);border-bottom:2px solid var(--blue-sky);transform:translateY(-8px);opacity:0;pointer-events:none;transition:all 0.3s;}
+.mob-menu.open{transform:translateY(0);opacity:1;pointer-events:all;}
+.mob-menu a{display:block;padding:15px 24px;color:#B0C8DC;font-size:0.85rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.05);transition:color 0.2s,background 0.2s;}
+.mob-menu a:hover{color:var(--white);background:rgba(58,143,192,0.1);}
+
+/* SECTION SWITCHER */
+.page{display:none;min-height:calc(100vh - 70px);}
+.page.active{display:block;}
+
+/* HOME */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:100px 5% 80px;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:linear-gradient(160deg,rgba(13,27,45,0.90) 0%,rgba(26,74,114,0.78) 45%,rgba(62,31,10,0.80) 100%),url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80') center/cover no-repeat;animation:bgz 14s ease-in-out infinite alternate;}
+@keyframes bgz{from{transform:scale(1);}to{transform:scale(1.07);}}
+.hero-geo{position:absolute;inset:0;z-index:1;pointer-events:none;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(58,143,192,0.06) 59px,rgba(58,143,192,0.06) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(58,143,192,0.06) 59px,rgba(58,143,192,0.06) 60px);}
+.hero-logo-circle{position:relative;z-index:2;width:clamp(130px,18vw,200px);height:clamp(130px,18vw,200px);border-radius:50%;background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);border:2px solid rgba(200,150,12,0.5);display:flex;align-items:center;justify-content:center;margin:0 auto 2.2rem;box-shadow:0 12px 50px rgba(0,0,0,0.5);animation:fadeSlideDown 0.8s ease both;overflow:hidden;}
+.hero-logo-circle svg{width:70%;height:70%;}
+.hero-eyebrow{position:relative;z-index:2;display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(58,143,192,0.5);padding:6px 20px;border-radius:30px;color:var(--blue-sky);font-size:0.7rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:1.4rem;animation:fadeSlideDown 0.8s 0.1s ease both;}
+.hero-eyebrow::before{content:'✦';font-size:0.55rem;color:var(--brown-light);}
+.hero-title{position:relative;z-index:2;font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,7vw,5.8rem);font-weight:700;color:var(--white);line-height:1.05;margin-bottom:1.2rem;animation:fadeSlideDown 0.8s 0.2s ease both;}
+.hero-title em{font-style:italic;color:var(--brown-light);}
+.hero-motto{position:relative;z-index:2;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.05rem,2.5vw,1.45rem);color:rgba(255,255,255,0.78);margin-bottom:2.6rem;animation:fadeSlideDown 0.8s 0.3s ease both;}
+.hero-btns{position:relative;z-index:2;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeSlideDown 0.8s 0.4s ease both;}
+.btn-blue{background:var(--blue-rich);color:var(--white);padding:14px 36px;border-radius:var(--r);font-size:0.82rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border:2px solid var(--blue-rich);transition:all 0.3s;display:inline-block;}
+.btn-blue:hover{background:var(--blue-sky);border-color:var(--blue-sky);transform:translateY(-3px);box-shadow:0 12px 28px rgba(30,95,148,0.45);}
+.btn-ghost{background:transparent;color:var(--white);padding:14px 36px;border-radius:var(--r);font-size:0.82rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border:2px solid rgba(255,255,255,0.35);transition:all 0.3s;display:inline-block;}
+.btn-ghost:hover{border-color:var(--white);background:rgba(255,255,255,0.08);transform:translateY(-3px);}
+.photo-strip{display:flex;height:180px;overflow:hidden;}
+.ps-img{flex:1;background-size:cover;background-position:center;opacity:0.6;transition:flex 0.5s ease,opacity 0.4s;cursor:pointer;border-top:2px solid var(--blue-sky);position:relative;}
+.ps-img:hover{flex:3;opacity:1;}
+.ps-img::after{content:attr(data-lbl);position:absolute;bottom:10px;left:10px;background:rgba(13,43,69,0.85);color:var(--blue-sky);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border-radius:2px;opacity:0;transition:opacity 0.3s;}
+.ps-img:hover::after{opacity:1;}
+.who{background:var(--white);padding:6rem 5%;}
+.inner{max-width:1200px;margin:0 auto;}
+.who-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.sec-label{font-size:0.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--brown-warm);font-weight:600;margin-bottom:1rem;display:block;}
+.who-grid h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,3.5vw,2.9rem);font-weight:700;color:var(--blue-deep);margin-bottom:1.4rem;line-height:1.2;}
+.who-grid p{color:var(--text-mid);line-height:1.85;font-size:1rem;margin-bottom:0.9rem;}
+.motto-bar{margin-top:2rem;padding:1.3rem 1.6rem;background:var(--blue-pale);border-left:4px solid var(--blue-rich);border-radius:0 var(--r) var(--r) 0;}
+.motto-bar p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.18rem;color:var(--blue-deep);margin:0;}
+.mosaic{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;height:400px;}
+.mosaic-img{background-size:cover;background-position:center;border-radius:var(--r);position:relative;overflow:hidden;}
+.mosaic-img:first-child{grid-row:span 2;}
+.mosaic-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(13,43,69,0.4),transparent);}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem;}
+.stat-box{text-align:center;padding:1.4rem;background:var(--off-white);border-radius:var(--r);border-bottom:3px solid var(--blue-rich);}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:700;color:var(--blue-rich);line-height:1;}
+.stat-l{font-size:0.75rem;color:var(--text-muted);margin-top:5px;}
+
+/* INFO */
+.info-hero{background:linear-gradient(140deg,var(--blue-deep) 0%,var(--blue-mid) 55%,var(--brown-dark) 100%);padding:6rem 5% 5rem;text-align:center;position:relative;overflow:hidden;}
+.info-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(58,143,192,0.12),transparent);}
+.info-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:700;color:var(--white);margin-bottom:1.5rem;position:relative;}
+.big-q{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.05rem,2.2vw,1.4rem);color:var(--brown-light);max-width:620px;margin:0 auto 0.6rem;position:relative;}
+.big-q-attr{color:rgba(255,255,255,0.45);font-size:0.8rem;position:relative;}
+.contact-wrap{padding:5rem 5%;max-width:1100px;margin:0 auto;}
+.contact-wrap h2{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--blue-deep);margin-bottom:0.5rem;}
+.divider{width:48px;height:3px;background:linear-gradient(to right,var(--blue-rich),var(--brown-warm));border-radius:2px;margin-bottom:2.8rem;}
+.contact-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.6rem;}
+.cc{background:var(--white);border-radius:var(--r);padding:2.2rem;box-shadow:var(--shadow-sm);border-top:3px solid var(--blue-rich);display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform 0.3s,box-shadow 0.3s;}
+.cc:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);}
+.cc-ico{width:62px;height:62px;background:linear-gradient(135deg,var(--blue-mid),var(--blue-rich));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1.3rem;box-shadow:0 6px 20px rgba(30,95,148,0.28);}
+.cc h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--blue-deep);margin-bottom:0.5rem;}
+.cc p{color:var(--text-muted);font-size:0.92rem;line-height:1.65;}
+.cc a{color:var(--blue-rich);font-weight:600;}
+.cc a:hover{color:var(--brown-warm);}
+.quotes-belt{background:var(--blue-deep);padding:5rem 5%;}
+.quotes-belt h2{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--white);text-align:center;margin-bottom:3rem;letter-spacing:1px;}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.4rem;max-width:1100px;margin:0 auto;}
+.qc{background:rgba(255,255,255,0.055);border:1px solid rgba(58,143,192,0.22);border-radius:var(--r);padding:1.8rem;transition:border-color 0.3s;}
+.qc:hover{border-color:rgba(58,143,192,0.55);}
+.qm{font-family:'Cormorant Garamond',serif;font-size:3.5rem;line-height:0.4;color:var(--brown-light);opacity:0.6;display:block;margin-bottom:1rem;}
+.qc p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(255,255,255,0.82);line-height:1.7;margin-bottom:0.9rem;}
+.qc cite{color:var(--brown-light);font-size:0.78rem;font-style:normal;letter-spacing:1px;}
+
+/* ABOUT */
+.about-hero{background:linear-gradient(150deg,var(--blue-deep) 0%,var(--blue-mid) 50%,var(--brown-dark) 100%);padding:7rem 5% 8rem;text-align:center;clip-path:polygon(0 0,100% 0,100% 86%,50% 100%,0 86%);position:relative;overflow:hidden;}
+.about-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 25% 65%,rgba(160,98,42,0.18),transparent 55%);pointer-events:none;}
+.ah-label{display:inline-block;font-size:0.68rem;letter-spacing:5px;text-transform:uppercase;color:var(--blue-sky);margin-bottom:1.2rem;position:relative;}
+.about-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,4rem);font-weight:700;color:var(--white);margin-bottom:0.8rem;position:relative;}
+.about-hero .amotto{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.4rem;color:var(--brown-light);position:relative;}
+.about-intro{max-width:780px;margin:4rem auto 0;padding:0 5%;text-align:center;}
+.about-intro p{color:var(--text-mid);font-size:1.02rem;line-height:1.9;}
+.what-we-do{padding:4rem 5% 5rem;max-width:1200px;margin:0 auto;}
+.what-we-do h2{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--blue-deep);margin-bottom:0.5rem;text-align:center;}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-top:3rem;}
+.srv-card{background:var(--white);border-radius:var(--r);padding:2.4rem;box-shadow:var(--shadow-sm);border-bottom:4px solid var(--blue-rich);transition:transform 0.3s,box-shadow 0.3s;position:relative;overflow:hidden;}
+.srv-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-md);}
+.srv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--blue-rich),var(--brown-warm));}
+.srv-icon-wrap{width:68px;height:68px;background:linear-gradient(135deg,var(--blue-pale),var(--blue-mid));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:1.4rem;box-shadow:0 4px 16px rgba(30,95,148,0.2);}
+.srv-card h3{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--blue-deep);margin-bottom:0.7rem;}
+.srv-card p{color:var(--text-muted);font-size:0.93rem;line-height:1.75;}
+.work-with-us{margin:0 5% 4rem;background:linear-gradient(135deg,var(--blue-deep),var(--blue-mid));border-radius:12px;padding:3.5rem;text-align:center;box-shadow:var(--shadow-md);}
+.work-with-us h2{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem;}
+.work-with-us p{color:rgba(255,255,255,0.72);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto;}
+.btn-brown{background:linear-gradient(135deg,var(--brown-mid),var(--brown-warm));color:var(--white);padding:14px 40px;border-radius:var(--r);font-size:0.85rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border:none;transition:all 0.3s;display:inline-block;}
+.btn-brown:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(122,68,32,0.45);}
+
+/* EVENTS */
+.events-page{padding-top:70px;}
+.events-header{background:linear-gradient(140deg,var(--blue-deep),var(--blue-mid) 60%,var(--brown-dark));padding:5rem 5% 4rem;text-align:center;position:relative;overflow:hidden;}
+.events-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(160,98,42,0.18),transparent 60%);}
+.events-header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:700;color:var(--white);position:relative;margin-bottom:0.6rem;}
+.events-header p{color:rgba(255,255,255,0.62);font-size:1rem;position:relative;}
+.events-main{padding:4rem 5%;max-width:1200px;margin:0 auto;}
+.events-main h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--blue-deep);margin-bottom:0.5rem;}
+.no-events{text-align:center;padding:4rem;color:var(--text-muted);font-size:1.05rem;background:var(--white);border-radius:var(--r);box-shadow:var(--shadow-sm);border:2px dashed var(--blue-pale);}
+.no-events span{font-size:3rem;display:block;margin-bottom:1rem;}
+.events-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.8rem;margin-top:2.5rem;}
+.ev-card{background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-sm);transition:transform 0.3s,box-shadow 0.3s;border-top:3px solid var(--blue-rich);}
+.ev-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);}
+.ev-card-img{height:180px;background-size:cover;background-position:center;background-color:var(--blue-pale);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--blue-rich);position:relative;overflow:hidden;}
+.ev-card-img img,.ev-card-img video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.ev-card-body{padding:1.5rem;}
+.ev-badge{display:inline-block;background:var(--blue-pale);color:var(--blue-rich);font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:20px;font-weight:600;margin-bottom:0.8rem;}
+.ev-card-body h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--blue-deep);margin-bottom:0.4rem;}
+.ev-place{display:flex;align-items:center;gap:6px;color:var(--text-muted);font-size:0.85rem;margin-bottom:0.8rem;}
+.ev-desc{color:var(--text-mid);font-size:0.9rem;line-height:1.65;}
+
+/* FOOTER */
+footer{background:var(--blue-deep);padding:4rem 5% 2rem;border-top:2px solid var(--blue-sky);}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:3rem;}
+.footer-logo-area p{color:rgba(255,255,255,0.5);font-size:0.88rem;line-height:1.75;max-width:280px;margin-top:1rem;}
+.footer-logo-svg{width:80px;height:auto;}
+.footer-col h4{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--white);margin-bottom:1.2rem;}
+.footer-col a{display:block;color:rgba(255,255,255,0.5);font-size:0.87rem;margin-bottom:0.6rem;transition:color 0.2s;cursor:pointer;}
+.footer-col a:hover{color:var(--blue-sky);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-bottom p{color:rgba(255,255,255,0.35);font-size:0.8rem;}
+.footer-socials{display:flex;gap:10px;}
+.social-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:0.9rem;border:1px solid rgba(255,255,255,0.12);transition:all 0.2s;cursor:pointer;}
+.social-btn:hover{background:var(--blue-sky);color:var(--white);border-color:var(--blue-sky);}
+
+/* ANIMATIONS */
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .nav-links{display:none;}.hamburger{display:flex;}.mob-menu{display:flex;}
+  .who-grid{grid-template-columns:1fr;gap:2.5rem;}.mosaic{height:260px;}
+  .stats-row{grid-template-columns:1fr 1fr;}.footer-top{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .hero-title{font-size:2.6rem;}.photo-strip{height:120px;}
+  .footer-top{grid-template-columns:1fr;}.footer-bottom{flex-direction:column;text-align:center;}
+  .work-with-us{margin:0 0 3rem;border-radius:0;}.stats-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR — no admin link -->
+<nav id="navbar">
+  <div class="nav-logo-wrap">
+    <svg class="nav-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="52" rx="32" ry="22" fill="none" stroke="#3A8FC0" stroke-width="3"/>
+      <ellipse cx="50" cy="52" rx="24" ry="15" fill="none" stroke="#3A8FC0" stroke-width="1.5"/>
+      <line x1="22" y1="30" x2="22" y2="55" stroke="#1E5F94" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="19" y1="30" x2="19" y2="40" stroke="#1E5F94" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="22" y1="30" x2="22" y2="40" stroke="#1E5F94" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="25" y1="30" x2="25" y2="40" stroke="#1E5F94" stroke-width="1.5" stroke-linecap="round"/>
+      <ellipse cx="78" cy="33" rx="4" ry="6" fill="none" stroke="#1E5F94" stroke-width="2"/>
+      <line x1="78" y1="39" x2="78" y2="60" stroke="#1E5F94" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M18 70 Q34 56 50 70 Q66 56 82 70" fill="none" stroke="#C8960C" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="18" y1="70" x2="18" y2="80" stroke="#C8960C" stroke-width="2"/>
+      <line x1="82" y1="70" x2="82" y2="80" stroke="#C8960C" stroke-width="2"/>
+      <line x1="34" y1="63" x2="34" y2="80" stroke="#C8960C" stroke-width="1.5"/>
+      <line x1="66" y1="63" x2="66" y2="80" stroke="#C8960C" stroke-width="1.5"/>
+      <path d="M38 52 C40 49 44 49 46 52 L50 54 L54 52 C56 49 60 49 62 52 L58 56 C56 58 53 58 51 56 L50 55 L49 56 C47 58 44 58 42 56 Z" fill="#C8960C" opacity="0.9"/>
+    </svg>
+    <div class="nav-brand-text">
+      <span class="nav-brand-main">Rwanda Hospitality Bridge</span>
+      <span class="nav-brand-sub">Connecting Talent to Opportunity</span>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" class="active-link" onclick="showPage('home',this);return false;">Home</a></li>
+    <li><a href="#" onclick="showPage('info',this);return false;">Info</a></li>
+    <li><a href="#" onclick="showPage('about',this);return false;">About</a></li>
+    <li><a href="#" onclick="showPage('events',this);return false;">Events</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMob()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mob-menu" id="mobMenu">
+  <a href="#" onclick="showPage('home',null);closeMob();return false;">Home</a>
+  <a href="#" onclick="showPage('info',null);closeMob();return false;">Info</a>
+  <a href="#" onclick="showPage('about',null);closeMob();return false;">About</a>
+  <a href="#" onclick="showPage('events',null);closeMob();return false;">Events</a>
+</div>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-bg"></div><div class="hero-geo"></div>
+    <div class="hero-logo-circle">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="52" rx="30" ry="20" fill="none" stroke="#3A8FC0" stroke-width="2.5"/>
+        <ellipse cx="50" cy="52" rx="22" ry="13" fill="none" stroke="#3A8FC0" stroke-width="1.5"/>
+        <line x1="22" y1="28" x2="22" y2="54" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="19" y1="28" x2="19" y2="38" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="22" y1="28" x2="22" y2="38" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="25" y1="28" x2="25" y2="38" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <ellipse cx="78" cy="32" rx="4" ry="5.5" fill="none" stroke="white" stroke-width="2"/>
+        <line x1="78" y1="37" x2="78" y2="58" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M18 70 Q34 56 50 70 Q66 56 82 70" fill="none" stroke="#C8960C" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="18" y1="70" x2="18" y2="80" stroke="#C8960C" stroke-width="2"/>
+        <line x1="82" y1="70" x2="82" y2="80" stroke="#C8960C" stroke-width="2"/>
+        <line x1="34" y1="63" x2="34" y2="80" stroke="#C8960C" stroke-width="1.5"/>
+        <line x1="66" y1="63" x2="66" y2="80" stroke="#C8960C" stroke-width="1.5"/>
+        <path d="M38 52 C40 49 44 49 46 52 L50 54 L54 52 C56 49 60 49 62 52 L58 56 C56 58 53 58 51 56 L50 55 L49 56 C47 58 44 58 42 56 Z" fill="#C8960C"/>
+      </svg>
+    </div>
+    <span class="hero-eyebrow">Kigali, Rwanda · Hospitality Excellence</span>
+    <h1 class="hero-title">Rwanda<br/><em>Hospitality Bridge</em></h1>
+    <p class="hero-motto">"Bridging hearts, culture, and opportunity — one handshake at a time."</p>
+    <div class="hero-btns">
+      <a class="btn-blue" href="#" onclick="showPage('about',null);return false;">Discover More</a>
+      <a class="btn-ghost" href="#" onclick="showPage('events',null);return false;">View Events</a>
+    </div>
+  </section>
+  <div class="photo-strip">
+    <div class="ps-img" data-lbl="Fine Dining" style="background-image:url('https://images.unsplash.com/photo-1544148103-0773bf10d330?w=600&q=75')"></div>
+    <div class="ps-img" data-lbl="Hotel Service" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=75')"></div>
+    <div class="ps-img" data-lbl="Team Training" style="background-image:url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&q=75')"></div>
+    <div class="ps-img" data-lbl="Events" style="background-image:url('https://images.unsplash.com/photo-1530023367847-a683933f4172?w=600&q=75')"></div>
+    <div class="ps-img" data-lbl="Restaurant" style="background-image:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=75')"></div>
+  </div>
+  <section class="who">
+    <div class="inner">
+      <div class="who-grid">
+        <div class="who-text reveal">
+          <span class="sec-label">Who We Are</span>
+          <h2>Empowering Rwanda's Hospitality Industry</h2>
+          <p>Rwanda Hospitality Bridge is a premier hospitality solutions group based in Kigali, dedicated to elevating the standard of service across Rwanda's growing tourism and hospitality sector.</p>
+          <p>We work at the intersection of talent, training, and opportunity — connecting skilled professionals with world-class establishments, and equipping the next generation with the skills they need to thrive.</p>
+          <div class="motto-bar"><p>"We connect talent to opportunity — and excellence follows."</p></div>
+          <div class="stats-row">
+            <div class="stat-box"><div class="stat-n">200+</div><div class="stat-l">Placements Made</div></div>
+            <div class="stat-box"><div class="stat-n">50+</div><div class="stat-l">Partner Hotels</div></div>
+            <div class="stat-box"><div class="stat-n">5+</div><div class="stat-l">Years Active</div></div>
+          </div>
+        </div>
+        <div class="mosaic reveal">
+          <div class="mosaic-img" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=75')"></div>
+          <div class="mosaic-img" style="background-image:url('https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=75')"></div>
+          <div class="mosaic-img" style="background-image:url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&q=75')"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer><div class="footer-inner"><div class="footer-top"><div class="footer-logo-area"><svg class="footer-logo-svg" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="28" rx="30" ry="18" fill="none" stroke="#3A8FC0" stroke-width="2"/><path d="M14 48 Q32 34 50 48 Q68 34 86 48" fill="none" stroke="#C8960C" stroke-width="2" stroke-linecap="round"/><path d="M36 28 C38 25 42 25 44 28 L50 31 L56 28 C58 25 62 25 64 28 L60 33 C58 35 55 35 53 33 L50 31 L47 33 C45 35 42 35 40 33 Z" fill="#C8960C"/></svg><p>Rwanda's leading hospitality placement, training, and staffing group.</p></div><div class="footer-col"><h4>Navigate</h4><a onclick="showPage('home',null)">Home</a><a onclick="showPage('info',null)">Info</a><a onclick="showPage('about',null)">About</a><a onclick="showPage('events',null)">Events</a></div><div class="footer-col"><h4>Contact</h4><a href="https://wa.me/250788618586">📱 +250 788 618 586</a><a href="mailto:hrgapando@gmail.com">✉ hrgapando@gmail.com</a><a>📍 KZ 47, KN 57, Kigali</a></div></div><div class="footer-bottom"><p>© 2025 Rwanda Hospitality Bridge. All rights reserved.</p><div class="footer-socials"><div class="social-btn">📘</div><div class="social-btn">📷</div><div class="social-btn">💼</div></div></div></div></footer>
+</div>
+
+<!-- INFO -->
+<div id="page-info" class="page">
+  <div class="info-hero">
+    <h1>Get In Touch</h1>
+    <p class="big-q">"Hospitality is not to change people, but to offer them a space where change can take place."</p>
+    <p class="big-q-attr">— Henri Nouwen</p>
+  </div>
+  <div class="contact-wrap">
+    <h2>Our Contact Information</h2>
+    <div class="divider"></div>
+    <div class="contact-cards">
+      <div class="cc reveal"><div class="cc-ico">💬</div><h3>WhatsApp</h3><p>Reach us instantly on WhatsApp for quick inquiries and support.</p>
+      
+      <p style="margin-top:0.8rem"><a href="https://wa.me/250788618586" target="_blank">+250 788 618 586</a></p>
+      
+      <p style="margin-top:0.8rem"><a href="https://wa.me/+1 (623) 205-5243" target="_blank">+1 (623) 205-5243</a></p>
+      
+      
+      </div>
+      <div class="cc reveal"><div class="cc-ico">✉️</div><h3>Email Us</h3><p>Send us a detailed message and we'll respond within 24 hours.
+      </p>
+      
+      <p style="margin-top:0.8rem"><a href="mailto:hrgapando@gmail.com">hrgapando@gmail.com</a></p> 
+     <p style="margin-top:0.8rem"><a href="mailto:uwamahororachel@gmail.com">uwamahororachel@gmail.com</a></p> 
+      
+      
+      </div>
+      <div class="cc reveal"><div class="cc-ico">📍</div><h3>Our Location</h3><p>Visit our office in the heart of Kigali for a face-to-face consultation.</p><p style="margin-top:0.8rem;color:var(--text-dark);font-weight:600;">KZ 47, KN 57,<br/>Kigali, Rwanda</p></div>
+    </div>
+  </div>
+  <div class="quotes-belt">
+    <h2>Words on Hospitality</h2>
+    <div class="qgrid">
+      <div class="qc reveal"><span class="qm">"</span><p>The greatest gift you can give someone is your time, your attention, your love, and your concern.</p><cite>— Joel Osteen</cite></div>
+      <div class="qc reveal"><span class="qm">"</span><p>Hospitality is making your guests feel at home, even if you wish they were.</p><cite>— Michael J. Fox</cite></div>
+      <div class="qc reveal"><span class="qm">"</span><p>Excellence in service is not an act, but a habit — the soul of a great hospitality professional.</p><cite>— Rwanda Hospitality Bridge</cite></div>
+      <div class="qc reveal"><span class="qm">"</span><p>We rise by lifting others. In hospitality, every smile is a bridge to a better world.</p><cite>— Rwanda Hospitality Bridge</cite></div>
+    </div>
+  </div>
+  <footer><div class="footer-inner"><div class="footer-top"><div class="footer-logo-area"><svg class="footer-logo-svg" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="28" rx="30" ry="18" fill="none" stroke="#3A8FC0" stroke-width="2"/><path d="M14 48 Q32 34 50 48 Q68 34 86 48" fill="none" stroke="#C8960C" stroke-width="2" stroke-linecap="round"/><path d="M36 28 C38 25 42 25 44 28 L50 31 L56 28 C58 25 62 25 64 28 L60 33 C58 35 55 35 53 33 L50 31 L47 33 C45 35 42 35 40 33 Z" fill="#C8960C"/></svg><p>Rwanda's leading hospitality solutions group.</p></div><div class="footer-col"><h4>Navigate</h4><a onclick="showPage('home',null)">Home</a><a onclick="showPage('about',null)">About</a><a onclick="showPage('events',null)">Events</a></div><div class="footer-col"><h4>Contact</h4><a href="https://wa.me/250788618586">+250 788 618 586</a><a href="mailto:hrgapando@gmail.com">hrgapando@gmail.com</a><a>KZ 47, KN 57, Kigali</a></div></div><div class="footer-bottom"><p>© 2025 Rwanda Hospitality Bridge. All rights reserved.</p><div class="footer-socials"><div class="social-btn">📘</div><div class="social-btn">📷</div><div class="social-btn">💼</div></div></div></div></footer>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page">
+  <div class="about-hero">
+    <span class="ah-label">Who We Are</span>
+    <h1>Rwanda Hospitality Bridge</h1>
+    <p class="amotto">"We connect talent to opportunity"</p>
+  </div>
+  <div class="about-intro reveal"><p>We are a Kigali-based hospitality solutions group committed to building a stronger, more skilled, and more connected hospitality industry in Rwanda. From job placement to hands-on training, we are the bridge between aspiring professionals and the opportunities they deserve.</p></div>
+  <div class="what-we-do">
+    <h2>What We Do</h2>
+    <div class="divider" style="margin:0.5rem auto 0;"></div>
+    <div class="services-grid">
+      <div class="srv-card reveal"><div class="srv-icon-wrap">🤝</div><h3>Job Placement</h3><p>We connect job seekers to employers across Rwanda's vibrant hospitality landscape. Our network spans hotels, restaurants, lodges, and event venues — matching the right talent with the right opportunity.</p></div>
+      <div class="srv-card reveal"><div class="srv-icon-wrap">✅</div><h3>Hospitality Training</h3><p>We equip hospitality professionals with the skills they need to excel — from front-of-house service to kitchen operations, guest relations, and hotel management. Practical. Certified. Career-ready.</p></div>
+      <div class="srv-card reveal"><div class="srv-icon-wrap">🏨</div><h3>Staff Recruitment</h3><p>We handle end-to-end hiring for hotels, lodges, cafes, and restaurants. Our rigorous vetting process ensures employers receive only qualified, reliable, and professional candidates.</p></div>
+    </div>
+  </div>
+  <div class="work-with-us reveal">
+    <h2>Work With Us</h2>
+    <p style="color:rgba(255,255,255,0.72);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto;">Whether you're looking for a job, need trained staff, or want to partner with us — we'd love to hear from you.</p>
+    <a class="btn-brown" href="#" onclick="showPage('info',null);return false;">View Our Contact Info →</a>
+  </div>
+  <footer><div class="footer-inner"><div class="footer-top"><div class="footer-logo-area"><svg class="footer-logo-svg" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="28" rx="30" ry="18" fill="none" stroke="#3A8FC0" stroke-width="2"/><path d="M14 48 Q32 34 50 48 Q68 34 86 48" fill="none" stroke="#C8960C" stroke-width="2" stroke-linecap="round"/><path d="M36 28 C38 25 42 25 44 28 L50 31 L56 28 C58 25 62 25 64 28 L60 33 C58 35 55 35 53 33 L50 31 L47 33 C45 35 42 35 40 33 Z" fill="#C8960C"/></svg><p>Rwanda's leading hospitality solutions group.</p></div><div class="footer-col"><h4>Navigate</h4><a onclick="showPage('home',null)">Home</a><a onclick="showPage('info',null)">Info</a><a onclick="showPage('events',null)">Events</a></div><div class="footer-col"><h4>Contact</h4><a href="https://wa.me/250788618586">+250 788 618 586</a><a href="mailto:hrgapando@gmail.com">hrgapando@gmail.com</a><a>KZ 47, KN 57, Kigali</a></div></div><div class="footer-bottom"><p>© 2025 Rwanda Hospitality Bridge. All rights reserved.</p><div class="footer-socials"><div class="social-btn">📘</div><div class="social-btn">📷</div><div class="social-btn">💼</div></div></div></div></footer>
+</div>
+
+<!-- EVENTS -->
+<div id="page-events" class="page events-page">
+  <div class="events-header">
+    <h1>Upcoming Events</h1>
+    <p>Discover the events hosted and organised by Rwanda Hospitality Bridge</p>
+  </div>
+  <div class="events-main">
+    <h2>All Events</h2>
+    <div class="divider"></div>
+    <div id="public-events-list"></div>
+  </div>
+  <footer><div class="footer-inner"><div class="footer-top"><div class="footer-logo-area"><svg class="footer-logo-svg" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="28" rx="30" ry="18" fill="none" stroke="#3A8FC0" stroke-width="2"/><path d="M14 48 Q32 34 50 48 Q68 34 86 48" fill="none" stroke="#C8960C" stroke-width="2" stroke-linecap="round"/><path d="M36 28 C38 25 42 25 44 28 L50 31 L56 28 C58 25 62 25 64 28 L60 33 C58 35 55 35 53 33 L50 31 L47 33 C45 35 42 35 40 33 Z" fill="#C8960C"/></svg><p>Rwanda's leading hospitality solutions group.</p></div><div class="footer-col"><h4>Navigate</h4><a onclick="showPage('home',null)">Home</a><a onclick="showPage('info',null)">Info</a><a onclick="showPage('about',null)">About</a></div><div class="footer-col"><h4>Contact</h4><a href="https://wa.me/250788618586">+250 788 618 586</a><a href="mailto:hrgapando@gmail.com">hrgapando@gmail.com</a><a>KZ 47, KN 57, Kigali</a></div></div><div class="footer-bottom"><p>© 2025 Rwanda Hospitality Bridge. All rights reserved.</p><div class="footer-socials"><div class="social-btn">📘</div><div class="social-btn">📷</div><div class="social-btn">💼</div></div></div></div></footer>
+</div>
+
+<script>
+let events=[];
+try{events=JSON.parse(localStorage.getItem('rhb_events')||'[]');}catch(e){events=[];}
+
+function showPage(id,linkEl){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(linkEl){document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active-link'));linkEl.classList.add('active-link');}
+  window.scrollTo(0,0);
+  if(id==='events')renderPublicEvents();
+  setTimeout(initReveal,50);
+}
+function toggleMob(){document.getElementById('hamburger').classList.toggle('open');document.getElementById('mobMenu').classList.toggle('open');}
+function closeMob(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobMenu').classList.remove('open');}
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>40));
+function initReveal(){
+  const els=document.querySelectorAll('.page.active .reveal:not(.visible)');
+  if(!els.length)return;
+  const io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});},{threshold:0.12});
+  els.forEach(el=>io.observe(el));
+}
+setTimeout(initReveal,100);
+
+function renderPublicEvents(){
+  const wrap=document.getElementById('public-events-list');
+  try{events=JSON.parse(localStorage.getItem('rhb_events')||'[]');}catch(e){events=[];}
+  if(!events.length){wrap.innerHTML='<div class="no-events"><span>📅</span>No events have been added yet.<br/>Check back soon!</div>';return;}
+  wrap.innerHTML='<div class="events-grid">'+events.map(ev=>`
+    <div class="ev-card">
+      <div class="ev-card-img">
+        ${ev.media&&ev.media.length?(ev.media[0].type.startsWith('video')?`<video src="${ev.media[0].url}" muted loop autoplay style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"></video>`:`<img src="${ev.media[0].url}" alt="${ev.name}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"/>`):'🎉'}
+      </div>
+      <div class="ev-card-body">
+        <span class="ev-badge">Event</span>
+        <h3>${ev.name}</h3>
+        <div class="ev-place">${ev.place}${ev.date?' · '+new Date(ev.date+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):''}</div>
+        <p class="ev-desc">${ev.desc.length>160?ev.desc.slice(0,157)+'...':ev.desc}</p>
+      </div>
+    </div>
+  `).join('')+'</div>';
+}
+renderPublicEvents();
+</script>
+</body>
+</html>

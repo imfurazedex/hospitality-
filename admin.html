@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Panel — Rwanda Hospitality Bridge</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --blue-deep:#0D2B45;--blue-mid:#1A4A72;--blue-rich:#1E5F94;--blue-sky:#3A8FC0;
+  --blue-pale:#D6EAF8;--white:#FFFFFF;--off-white:#F7F9FC;
+  --brown-dark:#3E1F0A;--brown-mid:#7A4420;--brown-warm:#A0622A;
+  --brown-light:#D4A574;--text-dark:#0D1B2A;--text-mid:#2C4A6E;--text-muted:#5A7A99;
+  --shadow-sm:0 4px 16px rgba(13,43,69,0.10);
+  --shadow-md:0 8px 32px rgba(13,43,69,0.16);
+  --shadow-lg:0 20px 60px rgba(13,43,69,0.22);
+  --r:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text-dark);min-height:100vh;}
+button{cursor:pointer;font-family:inherit;border:none;}
+a{text-decoration:none;}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;
+  background:linear-gradient(150deg,var(--blue-deep) 0%,var(--blue-mid) 55%,var(--brown-dark) 100%);
+  position:relative;overflow:hidden;
+}
+#login-screen::before{
+  content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(58,143,192,0.06) 59px,rgba(58,143,192,0.06) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(58,143,192,0.06) 59px,rgba(58,143,192,0.06) 60px);
+}
+.login-card{
+  position:relative;z-index:2;
+  background:var(--white);border-radius:12px;
+  padding:3rem;width:100%;max-width:420px;
+  box-shadow:var(--shadow-lg);
+  border-top:4px solid var(--blue-rich);
+  margin:2rem;
+}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:2rem;justify-content:center;}
+.login-logo svg{width:52px;height:52px;}
+.login-logo-text{display:flex;flex-direction:column;line-height:1.15;}
+.login-logo-text strong{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--blue-deep);}
+.login-logo-text span{font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--blue-sky);}
+.login-card h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--blue-deep);margin-bottom:0.3rem;text-align:center;}
+.login-card p{color:var(--text-muted);font-size:0.85rem;text-align:center;margin-bottom:2rem;}
+.lock-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(30,95,148,0.08);border:1px solid rgba(30,95,148,0.2);color:var(--blue-rich);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin:0 auto 1.8rem;display:flex;width:fit-content;}
+.form-group{margin-bottom:1.3rem;}
+.form-group label{display:block;font-size:0.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--blue-deep);margin-bottom:0.5rem;}
+.form-input{width:100%;padding:12px 16px;border:1.5px solid #C8D8E8;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--text-dark);background:var(--off-white);transition:border-color 0.2s,box-shadow 0.2s;outline:none;}
+.form-input:focus{border-color:var(--blue-rich);box-shadow:0 0 0 3px rgba(30,95,148,0.1);}
+.form-error{color:#C0392B;font-size:0.82rem;margin-top:5px;display:none;}
+.form-error.show{display:block;}
+.btn-login{width:100%;background:linear-gradient(135deg,var(--blue-rich),var(--blue-sky));color:var(--white);padding:14px;border-radius:var(--r);font-size:0.88rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border:none;transition:all 0.3s;margin-top:0.5rem;}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(30,95,148,0.4);}
+.back-link{display:block;text-align:center;margin-top:1.4rem;color:var(--text-muted);font-size:0.82rem;}
+.back-link a{color:var(--blue-rich);font-weight:600;}
+.back-link a:hover{color:var(--brown-warm);}
+
+/* ── ADMIN PANEL ── */
+#admin-panel{display:none;}
+
+/* Top bar */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:64px;background:rgba(10,22,38,0.97);backdrop-filter:blur(14px);
+  border-bottom:2px solid var(--blue-sky);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;
+}
+.topbar-brand{display:flex;align-items:center;gap:10px;}
+.topbar-brand svg{width:42px;height:42px;}
+.topbar-brand-text strong{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--white);display:block;}
+.topbar-brand-text span{font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--blue-sky);}
+.topbar-right{display:flex;align-items:center;gap:1rem;}
+.admin-badge{background:rgba(58,143,192,0.15);border:1px solid rgba(58,143,192,0.3);color:var(--blue-sky);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border-radius:20px;}
+.btn-logout{background:linear-gradient(135deg,var(--brown-mid),var(--brown-warm));color:var(--white);padding:8px 20px;border-radius:var(--r);font-size:0.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;border:none;}
+.btn-logout:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-view-site{background:rgba(30,95,148,0.2);color:var(--blue-sky);border:1px solid rgba(58,143,192,0.3);padding:8px 16px;border-radius:var(--r);font-size:0.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;}
+.btn-view-site:hover{background:rgba(30,95,148,0.35);color:var(--white);}
+
+/* Sidebar + main */
+.admin-layout{display:flex;min-height:calc(100vh - 64px);margin-top:64px;}
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--blue-deep);
+  border-right:1px solid rgba(255,255,255,0.07);
+  padding:2rem 0;
+  position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;
+}
+.sidebar-label{font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:0 1.4rem;margin-bottom:0.8rem;margin-top:1.2rem;}
+.sidebar-label:first-child{margin-top:0;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 1.4rem;color:rgba(255,255,255,0.55);
+  font-size:0.85rem;font-weight:500;cursor:pointer;
+  transition:color 0.2s,background 0.2s;
+  border-left:3px solid transparent;
+}
+.nav-item:hover{color:var(--white);background:rgba(255,255,255,0.05);}
+.nav-item.active{color:var(--white);background:rgba(58,143,192,0.15);border-left-color:var(--blue-sky);}
+.nav-item .ni{font-size:1rem;width:20px;text-align:center;}
+
+/* Main content */
+.main-content{flex:1;padding:2.5rem 3%;overflow-x:hidden;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* Page title */
+.page-title{margin-bottom:2rem;}
+.page-title h1{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--blue-deep);margin-bottom:0.3rem;}
+.page-title p{color:var(--text-muted);font-size:0.88rem;}
+
+/* Stats overview */
+.stats-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.2rem;margin-bottom:2.5rem;}
+.stat-card{background:var(--white);border-radius:var(--r);padding:1.5rem;box-shadow:var(--shadow-sm);border-left:4px solid var(--blue-rich);display:flex;flex-direction:column;gap:0.4rem;}
+.stat-card.brown{border-left-color:var(--brown-warm);}
+.stat-card.green{border-left-color:#27AE60;}
+.sc-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--blue-deep);line-height:1;}
+.sc-lbl{font-size:0.78rem;color:var(--text-muted);font-weight:500;}
+
+/* Form card */
+.form-card{background:var(--white);border-radius:10px;padding:2.5rem;box-shadow:var(--shadow-sm);margin-bottom:2rem;border-top:4px solid var(--blue-rich);}
+.form-card h2{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--blue-deep);margin-bottom:0.3rem;}
+.form-card .sub{color:var(--text-muted);font-size:0.86rem;margin-bottom:2rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.form-textarea{resize:vertical;min-height:110px;}
+
+/* Media upload */
+.media-drop{border:2px dashed #C0D4E8;border-radius:var(--r);padding:2.2rem;text-align:center;background:var(--off-white);transition:border-color 0.3s,background 0.3s;cursor:pointer;position:relative;}
+.media-drop:hover,.media-drop.dragover{border-color:var(--blue-rich);background:var(--blue-pale);}
+.media-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.media-drop-icon{font-size:2.8rem;margin-bottom:0.7rem;}
+.media-drop p{color:var(--text-muted);font-size:0.88rem;}
+.media-drop strong{color:var(--blue-rich);}
+.media-preview{display:flex;flex-wrap:wrap;gap:10px;margin-top:1rem;}
+.mp-item{position:relative;width:84px;height:84px;border-radius:var(--r);overflow:hidden;border:2px solid var(--blue-pale);}
+.mp-item img,.mp-item video{width:100%;height:100%;object-fit:cover;}
+.mp-remove{position:absolute;top:3px;right:3px;background:rgba(192,57,43,0.88);color:var(--white);border:none;border-radius:50%;width:20px;height:20px;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+/* Buttons */
+.btn-submit{background:linear-gradient(135deg,var(--blue-rich),var(--blue-sky));color:var(--white);padding:14px 40px;border-radius:var(--r);border:none;font-size:0.85rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:all 0.3s;width:100%;margin-top:0.5rem;}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(30,95,148,0.4);}
+
+/* Events list */
+.events-list-wrap{display:flex;flex-direction:column;gap:1rem;}
+.ev-row{background:var(--white);border-radius:var(--r);padding:1.3rem 1.6rem;box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;gap:1rem;border-left:4px solid var(--blue-rich);flex-wrap:wrap;transition:box-shadow 0.2s;}
+.ev-row:hover{box-shadow:var(--shadow-md);}
+.ev-row-thumb{width:52px;height:52px;border-radius:var(--r);background:var(--blue-pale);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.ev-row-thumb img,.ev-row-thumb video{width:100%;height:100%;object-fit:cover;}
+.ev-row-info{flex:1;min-width:160px;}
+.ev-row-info h4{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--blue-deep);margin-bottom:3px;}
+.ev-row-info span{color:var(--text-muted);font-size:0.8rem;}
+.ev-row-actions{display:flex;gap:8px;align-items:center;}
+.btn-delete{background:rgba(192,57,43,0.08);color:#C0392B;border:1px solid rgba(192,57,43,0.25);border-radius:var(--r);padding:7px 16px;font-size:0.8rem;font-weight:600;transition:all 0.2s;}
+.btn-delete:hover{background:#C0392B;color:var(--white);}
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--text-muted);background:var(--white);border-radius:var(--r);box-shadow:var(--shadow-sm);border:2px dashed var(--blue-pale);}
+.empty-state span{font-size:3rem;display:block;margin-bottom:1rem;}
+
+/* Toast */
+.toast{position:fixed;bottom:28px;right:28px;z-index:9999;padding:15px 22px;border-radius:var(--r);font-weight:600;font-size:0.88rem;box-shadow:0 8px 24px rgba(0,0,0,0.18);transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);display:flex;align-items:center;gap:10px;}
+.toast.success{background:linear-gradient(135deg,#1A6B3A,#27AE60);color:var(--white);}
+.toast.error{background:linear-gradient(135deg,#922B21,#C0392B);color:var(--white);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .form-row{grid-template-columns:1fr;}
+  .topbar-right .admin-badge{display:none;}
+  .main-content{padding:1.5rem 4%;}
+  .btn-view-site{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="52" rx="32" ry="22" fill="none" stroke="#3A8FC0" stroke-width="3"/>
+        <ellipse cx="50" cy="52" rx="24" ry="15" fill="none" stroke="#3A8FC0" stroke-width="1.5"/>
+        <line x1="22" y1="30" x2="22" y2="55" stroke="#1E5F94" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="19" y1="30" x2="19" y2="40" stroke="#1E5F94" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="22" y1="30" x2="22" y2="40" stroke="#1E5F94" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="25" y1="30" x2="25" y2="40" stroke="#1E5F94" stroke-width="1.5" stroke-linecap="round"/>
+        <ellipse cx="78" cy="33" rx="4" ry="6" fill="none" stroke="#1E5F94" stroke-width="2"/>
+        <line x1="78" y1="39" x2="78" y2="60" stroke="#1E5F94" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M18 70 Q34 56 50 70 Q66 56 82 70" fill="none" stroke="#C8960C" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="18" y1="70" x2="18" y2="80" stroke="#C8960C" stroke-width="2"/>
+        <line x1="82" y1="70" x2="82" y2="80" stroke="#C8960C" stroke-width="2"/>
+        <line x1="34" y1="63" x2="34" y2="80" stroke="#C8960C" stroke-width="1.5"/>
+        <line x1="66" y1="63" x2="66" y2="80" stroke="#C8960C" stroke-width="1.5"/>
+        <path d="M38 52 C40 49 44 49 46 52 L50 54 L54 52 C56 49 60 49 62 52 L58 56 C56 58 53 58 51 56 L50 55 L49 56 C47 58 44 58 42 56 Z" fill="#C8960C"/>
+      </svg>
+      <div class="login-logo-text">
+        <strong>Rwanda Hospitality Bridge</strong>
+        <span>Admin Portal</span>
+      </div>
+    </div>
+
+    <div class="lock-badge">🔒 Restricted Access</div>
+    <h2>Administrator Login</h2>
+    <p>Enter your credentials to manage the website.</p>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" class="form-input" id="login-user" placeholder="Enter username" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-input" id="login-pass" placeholder="Enter password" autocomplete="current-password"/>
+      <div class="form-error" id="login-err">Incorrect username or password. Please try again.</div>
+    </div>
+    <button class="btn-login" onclick="doLogin()">Login to Admin Panel →</button>
+    <p class="back-link">← <a href="index.html">Back to public website</a></p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     ADMIN PANEL
+════════════════════════════════════════ -->
+<div id="admin-panel">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="52" rx="30" ry="20" fill="none" stroke="#3A8FC0" stroke-width="2.5"/>
+        <path d="M18 70 Q34 56 50 70 Q66 56 82 70" fill="none" stroke="#C8960C" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M38 52 C40 49 44 49 46 52 L50 54 L54 52 C56 49 60 49 62 52 L58 56 C56 58 53 58 51 56 L50 55 L49 56 C47 58 44 58 42 56 Z" fill="#C8960C"/>
+      </svg>
+      <div class="topbar-brand-text">
+        <strong>Rwanda Hospitality Bridge</strong>
+        <span>Admin Panel</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="admin-badge">⚙ Administrator</span>
+      <a href="index.html" class="btn-view-site">🌐 View Site</a>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Layout -->
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-label">Menu</div>
+      <div class="nav-item active" onclick="switchTab('dashboard',this)"><span class="ni">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="switchTab('add-event',this)"><span class="ni">➕</span> Add Event</div>
+      <div class="nav-item" onclick="switchTab('manage-events',this)"><span class="ni">📋</span> Manage Events</div>
+      <div class="sidebar-label">Links</div>
+      <div class="nav-item" onclick="window.open('index.html','_blank')"><span class="ni">🌐</span> View Website</div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content">
+
+      <!-- DASHBOARD -->
+      <div id="tab-dashboard" class="tab-panel active">
+        <div class="page-title">
+          <h1>Dashboard</h1>
+          <p>Welcome back, Admin. Here's a quick overview of your website content.</p>
+        </div>
+        <div class="stats-overview">
+          <div class="stat-card">
+            <div class="sc-num" id="dash-total">0</div>
+            <div class="sc-lbl">Total Events</div>
+          </div>
+          <div class="stat-card brown">
+            <div class="sc-num" id="dash-media">0</div>
+            <div class="sc-lbl">Media Files</div>
+          </div>
+          <div class="stat-card green">
+            <div class="sc-num">4</div>
+            <div class="sc-lbl">Pages Live</div>
+          </div>
+        </div>
+        <div class="form-card">
+          <h2>Quick Actions</h2>
+          <p class="sub">Jump straight to what you need.</p>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <button class="btn-submit" style="width:auto;padding:12px 28px;" onclick="switchTab('add-event',null)">➕ Add New Event</button>
+            <button class="btn-submit" style="width:auto;padding:12px 28px;background:linear-gradient(135deg,var(--brown-mid),var(--brown-warm));" onclick="switchTab('manage-events',null)">📋 Manage Events</button>
+            <a href="index.html" target="_blank"><button class="btn-submit" style="width:auto;padding:12px 28px;background:linear-gradient(135deg,#1A6B3A,#27AE60);">🌐 View Live Site</button></a>
+          </div>
+        </div>
+        <!-- Recent events preview -->
+        <div class="form-card">
+          <h2>Recent Events</h2>
+          <p class="sub">The last 3 events published on the website.</p>
+          <div id="dash-recent"></div>
+        </div>
+      </div>
+
+      <!-- ADD EVENT -->
+      <div id="tab-add-event" class="tab-panel">
+        <div class="page-title">
+          <h1>Add New Event</h1>
+          <p>Fill in the details below to publish a new event to the public website.</p>
+        </div>
+        <div class="form-card">
+          <h2>Event Details</h2>
+          <p class="sub">All fields marked * are required.</p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Event Name *</label>
+              <input type="text" class="form-input" id="ev-name" placeholder="e.g. Hospitality Gala Night 2025"/>
+              <div class="form-error" id="err-name">Event name is required.</div>
+            </div>
+            <div class="form-group">
+              <label>Event Location / Place *</label>
+              <input type="text" class="form-input" id="ev-place" placeholder="e.g. Kigali Convention Centre"/>
+              <div class="form-error" id="err-place">Event place is required.</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Event Date</label>
+            <input type="date" class="form-input" id="ev-date"/>
+          </div>
+
+          <div class="form-group">
+            <label>Event Description *</label>
+            <textarea class="form-input form-textarea" id="ev-desc" placeholder="Describe what this event is about, who should attend, and what to expect..."></textarea>
+            <div class="form-error" id="err-desc">Description is required.</div>
+          </div>
+
+          <div class="form-group">
+            <label>Event Images &amp; Videos</label>
+            <div class="media-drop" id="media-drop">
+              <input type="file" id="media-input" accept="image/*,video/*" multiple onchange="handleMedia(this.files)"/>
+              <div class="media-drop-icon">🖼️</div>
+              <p><strong>Click to upload</strong> or drag &amp; drop files here</p>
+              <p style="margin-top:4px;font-size:0.8rem;">Supports JPG, PNG, GIF, MP4, MOV — max 20MB each</p>
+            </div>
+            <div class="media-preview" id="media-preview"></div>
+          </div>
+
+          <button class="btn-submit" onclick="addEvent()">✓ Publish Event to Website</button>
+        </div>
+      </div>
+
+      <!-- MANAGE EVENTS -->
+      <div id="tab-manage-events" class="tab-panel">
+        <div class="page-title">
+          <h1>Manage Events</h1>
+          <p>View, review, and delete events published on the public website.</p>
+        </div>
+        <div class="form-card">
+          <h2>All Published Events</h2>
+          <p class="sub" id="manage-count">Loading...</p>
+          <div class="events-list-wrap" id="manage-events-list"></div>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /admin-layout -->
+</div><!-- /admin-panel -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Credentials (change these to your own)
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'rhb2025';
+
+// ── State
+let events = [];
+let mediaFiles = [];
+
+function loadEvents(){
+  try{ events = JSON.parse(localStorage.getItem('rhb_events') || '[]'); }
+  catch(e){ events = []; }
+}
+
+// ── Login / Logout ──────────────────────────────
+function doLogin(){
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-err');
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    err.classList.remove('show');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    loadEvents();
+    refreshDashboard();
+  } else {
+    err.classList.add('show');
+    document.getElementById('login-pass').value = '';
+  }
+}
+document.getElementById('login-pass').addEventListener('keydown', e => {
+  if(e.key === 'Enter') doLogin();
+});
+document.getElementById('login-user').addEventListener('keydown', e => {
+  if(e.key === 'Enter') document.getElementById('login-pass').focus();
+});
+
+function doLogout(){
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+// ── Sidebar tabs ────────────────────────────────
+function switchTab(id, el){
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if(el) el.classList.add('active');
+  if(id === 'manage-events') renderManageEvents();
+  if(id === 'dashboard') refreshDashboard();
+}
+
+// ── Dashboard ───────────────────────────────────
+function refreshDashboard(){
+  loadEvents();
+  document.getElementById('dash-total').textContent = events.length;
+  const totalMedia = events.reduce((acc, e) => acc + (e.media ? e.media.length : 0), 0);
+  document.getElementById('dash-media').textContent = totalMedia;
+  const recent = events.slice(0, 3);
+  const wrap = document.getElementById('dash-recent');
+  if(!recent.length){
+    wrap.innerHTML = '<div class="empty-state"><span>📅</span>No events yet. <strong>Add your first event</strong> from the sidebar.</div>';
+    return;
+  }
+  wrap.innerHTML = '<div class="events-list-wrap">' + recent.map(ev => evRow(ev)) + '</div>';
+}
+
+// ── Media ───────────────────────────────────────
+function handleMedia(files){
+  Array.from(files).forEach(file => {
+    if(file.size > 20*1024*1024){ showToast(file.name + ' exceeds 20MB limit.', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      mediaFiles.push({ url: e.target.result, type: file.type, name: file.name });
+      renderMediaPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderMediaPreview(){
+  document.getElementById('media-preview').innerHTML = mediaFiles.map((f,i) => `
+    <div class="mp-item">
+      ${f.type.startsWith('video') ? `<video src="${f.url}" muted></video>` : `<img src="${f.url}" alt="${f.name}"/>`}
+      <button class="mp-remove" onclick="removeMedia(${i})">✕</button>
+    </div>
+  `).join('');
+}
+function removeMedia(i){ mediaFiles.splice(i,1); renderMediaPreview(); }
+
+const dropEl = document.getElementById('media-drop');
+dropEl.addEventListener('dragover', e => { e.preventDefault(); dropEl.classList.add('dragover'); });
+dropEl.addEventListener('dragleave', () => dropEl.classList.remove('dragover'));
+dropEl.addEventListener('drop', e => { e.preventDefault(); dropEl.classList.remove('dragover'); handleMedia(e.dataTransfer.files); });
+
+// ── Add Event ───────────────────────────────────
+function addEvent(){
+  const name  = document.getElementById('ev-name').value.trim();
+  const place = document.getElementById('ev-place').value.trim();
+  const desc  = document.getElementById('ev-desc').value.trim();
+  const date  = document.getElementById('ev-date').value;
+  let valid = true;
+  [{f:'name',v:name},{f:'place',v:place},{f:'desc',v:desc}].forEach(({f,v}) => {
+    const err = document.getElementById('err-'+f);
+    if(!v){ err.classList.add('show'); valid=false; }
+    else err.classList.remove('show');
+  });
+  if(!valid) return;
+
+  loadEvents();
+  const ev = { id: Date.now(), name, place, desc, date, media: [...mediaFiles] };
+  events.unshift(ev);
+  try{ localStorage.setItem('rhb_events', JSON.stringify(events)); } catch(e){}
+
+  // Reset form
+  ['ev-name','ev-place','ev-desc','ev-date'].forEach(id => document.getElementById(id).value = '');
+  mediaFiles = [];
+  renderMediaPreview();
+  document.getElementById('media-input').value = '';
+
+  showToast('✓ Event "' + name + '" published successfully!', 'success');
+  refreshDashboard();
+}
+
+// ── Delete Event ────────────────────────────────
+function deleteEvent(id){
+  if(!confirm('Delete this event? This action cannot be undone.')) return;
+  loadEvents();
+  events = events.filter(e => e.id !== id);
+  try{ localStorage.setItem('rhb_events', JSON.stringify(events)); } catch(e){}
+  renderManageEvents();
+  refreshDashboard();
+  showToast('Event deleted.', 'success');
+}
+
+// ── Render helpers ──────────────────────────────
+function evRow(ev){
+  const thumb = ev.media && ev.media.length
+    ? (ev.media[0].type.startsWith('video')
+        ? `<video src="${ev.media[0].url}" muted style="width:100%;height:100%;object-fit:cover;"></video>`
+        : `<img src="${ev.media[0].url}" alt="${ev.name}" style="width:100%;height:100%;object-fit:cover;"/>`)
+    : '🎉';
+  const dateStr = ev.date ? new Date(ev.date+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : 'No date set';
+  return `
+    <div class="ev-row">
+      <div class="ev-row-thumb">${thumb}</div>
+      <div class="ev-row-info">
+        <h4>${ev.name}</h4>
+        <span>📍 ${ev.place} &nbsp;·&nbsp; 📅 ${dateStr}${ev.media&&ev.media.length?' &nbsp;·&nbsp; 🖼 '+ev.media.length+' media':''}</span>
+      </div>
+      <div class="ev-row-actions">
+        <button class="btn-delete" onclick="deleteEvent(${ev.id})">🗑 Delete</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderManageEvents(){
+  loadEvents();
+  const wrap = document.getElementById('manage-events-list');
+  const countEl = document.getElementById('manage-count');
+  if(!events.length){
+    countEl.textContent = 'No events published yet.';
+    wrap.innerHTML = '<div class="empty-state"><span>📅</span>No events yet. Go to <strong>Add Event</strong> to publish your first one.</div>';
+    return;
+  }
+  countEl.textContent = events.length + ' event' + (events.length!==1?'s':'') + ' currently published.';
+  wrap.innerHTML = events.map(ev => evRow(ev)).join('');
+}
+
+// ── Toast ───────────────────────────────────────
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
